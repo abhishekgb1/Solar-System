@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AstroVenture - Stars</title>
+  <style>
+    :root{ --header-h:70px; }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; font-family: 'Segoe UI', sans-serif; color:#fff; overflow:hidden; }
+
+    /* Background Layers for Crossfade */
+    #bg, #bg2 {
+      position:fixed; inset:0;
+      background:no-repeat center/cover;
+      z-index:-3;
+      transition: opacity 1.3s ease-in-out;
+    }
+    #bg2{ opacity:0; }
+
+    /* Overlay Gradient for readability */
+    #overlay {
+      position:fixed; inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+      z-index:-2;
+    }
+    
+    #bg {
+      position:fixed;
+      inset:0;
+      background:url('https://cdn.wallpapersafari.com/87/38/BgrehD.jpg') no-repeat center/cover;
+      z-index:-1;
+      transition: background-image 1s ease-in-out;
+    }
+
+
+    /* Header */
+    header{
+      position:fixed; inset:0 0 auto 0; height:var(--header-h);
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); z-index:10;
+    }
+    .logo{ position:absolute; left:30px; font-size:1.6em; font-weight:800; color:#ffd700; letter-spacing:1px; }
+    nav ul{ display:flex; gap:25px; margin:0; padding:0; list-style:none; }
+    nav a{ color:#fff; text-decoration:none; font-weight:600; transition:.3s; }
+    nav a:hover{ color:#ffd700; }
+
+    /* Layout */
+    .container{
+      position:absolute; inset:var(--header-h) 0 0 0;
+      display:grid; grid-template-columns:260px 1fr;
+      height:calc(100% - var(--header-h));
+    }
+
+    /* Sidebar */
+    .sidebar{
+      overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none;
+      background:rgba(0,0,0,0.55);
+    }
+    .sidebar::-webkit-scrollbar{ display:none; }
+    .star-item{
+      position:relative;
+      height:80px;
+      cursor:pointer;
+      display:flex; align-items:flex-end;
+      padding:10px 14px;
+      background-size:cover; background-position:center;
+      border-bottom:1px solid rgba(255,255,255,0.15);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .star-item::after{
+      content:"";
+      position:absolute; inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.7),rgba(0,0,0,0));
+    }
+    .star-item span{
+      position:relative; z-index:1;
+      font-weight:600; text-shadow:0 2px 4px rgba(0,0,0,.7);
+    }
+    .star-item:hover{ transform:scale(1.05); }
+    .star-item.active { 
+      transform:scale(1.08); 
+      box-shadow:0 0 20px #ffd700; 
+    }
+
+    /* Content */
+    .content{
+      position:relative;
+      padding:40px;
+      display:flex; justify-content:center; align-items:center;
+      overflow-y:auto; 
+      transition:opacity .5s ease, transform .5s ease;
+    }
+    .content.hidden{ opacity:0; transform:translateY(20px) scale(0.97); }
+    .content.visible{ opacity:1; transform:translateY(0) scale(1); }
+
+    .info-box{
+      max-width:800px;
+      width:100%;
+      background:rgba(0,0,0,0.65);
+      padding:2rem;
+      border-radius:16px;
+      text-align:center;
+      box-shadow:0 0 40px rgba(0,0,0,0.6);
+      animation: floatBox 6s ease-in-out infinite alternate;
+    }
+    @keyframes floatBox {
+      from { transform:translateY(0); }
+      to   { transform:translateY(-8px); }
+    }
+
+    .info-box h1{ font-size:2.8rem; color:#ffd700; margin-bottom:1rem; }
+    .info-box p{ font-size:1.2rem; line-height:1.6; }
+
+    .star-info-table{
+      margin:20px auto;
+      border-collapse:collapse;
+      width:100%; max-width:650px;
+      font-size:1rem;
+    }
+    .star-info-table th, .star-info-table td{
+      padding:10px;
+      border:1px solid rgba(255,255,255,0.2);
+      text-align:left;
+    }
+    .star-info-table th{ background:rgba(255,255,255,0.1); }
+
+    .wiki-link, .video-link{
+      display:inline-block;
+      margin-top:12px;
+      color:#ffd700;
+      font-weight:600;
+      text-decoration:none;
+      transition: transform 0.3s, color 0.3s;
+    }
+    .wiki-link:hover, .video-link:hover{ 
+      color:#fff; transform:scale(1.05); text-decoration:underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Layers -->
+  <div id="bg"></div>
+  <div id="bg2"></div>
+  <div id="overlay"></div>
+
+  <header>
+    <div class="logo">AstroVenture</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="planets.html">Planets</a></li>
+        <li><a href="stars.html">Stars</a></li>
+        <li><a href="galaxies.html">Galaxies</a></li>
+        <li><a href="solarsystem.html">Solar System</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar" id="star-list"></aside>
+    <main class="content hidden" id="star-info">
+      <div class="info-box">
+        <h1>Welcome to the Stars ✨</h1>
+        <p>Select a star from the left sidebar to learn more about it.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  const stars = {
+    sun:{name:"The Sun",desc:"Our G2V main-sequence star at the center of the Solar System.",type:"G2V Main Sequence",distance:"0 ly",luminosity:"1 L☉",radius:"696,340 km",thumb:"https://cdn.mos.cms.futurecdn.net/UZxi4nPtjmePmEx8wuKP43.jpg",bg:"https://images8.alphacoders.com/135/1352165.jpeg",wiki:"https://en.wikipedia.org/wiki/Sun",video:"https://youtu.be/2HoTK_Gqi2Q"},
+    aldebaran:{name:"Aldebaran",desc:"Red giant in Taurus, representing the eye of the bull.",type:"K5III",distance:"65 ly",luminosity:"518 L☉",radius:"44.2 R☉",thumb:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR69jkShD29bLL1icZdHlReDZ4tHlNjgHh1Fw&s",bg:"https://cdn.mos.cms.futurecdn.net/9A228sxQbc8M5SRT7SUJuL.jpg",wiki:"https://en.wikipedia.org/wiki/Aldebaran",video:"https://youtu.be/o-MzsTAWiWg"},
+    vega:{name:"Vega",desc:"Bright star in the Lyra constellation, part of the Summer Triangle.",type:"A0V",distance:"25 ly",luminosity:"40 L☉",radius:"2.362 R☉",thumb:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0v9xVFYtWzXGi2TfxTlDz84eJ_XW19dgqjQ&s",bg:"https://media.hswstatic.com/gif/vega-star-2.jpg",wiki:"https://en.wikipedia.org/wiki/Vega",video:"https://youtu.be/i8j8WcUFdqc"},
+    sirius:{name:"Sirius",desc:"Brightest star in the night sky, part of the Canis Major constellation.",type:"A1V",distance:"8.6 ly",luminosity:"25.4 L☉",radius:"1.711 R☉",thumb:"https://w0.peakpx.com/wallpaper/467/125/HD-wallpaper-sirius-planet-space.jpg",bg:"https://cdn.wallpapersafari.com/5/24/IvSYOt.jpg",wiki:"https://en.wikipedia.org/wiki/Sirius",video:"https://youtu.be/PU5CgWsAPqM"},
+    betelgeuse:{name:"Betelgeuse",desc:"A red supergiant in Orion, expected to explode as a supernova in the future.",type:"M1-M2 Ia-ab",distance:"642.5 ly",luminosity:"126,000 L☉",radius:"887 R☉",thumb:"https://cdn.wallpapersafari.com/26/8/Yy6xa0.jpg",bg:"https://www.syfy.com/sites/syfy/files/block_betelgeuse_crop.jpg",wiki:"https://en.wikipedia.org/wiki/Betelgeuse",video:"https://youtu.be/6euKHOtHmIU"},
+    polaris:{name:"Polaris",desc:"The North Star in Ursa Minor, used historically for navigation.",type:"F7Ib",distance:"433 ly",luminosity:"2,500 L☉",radius:"37.5 R☉",thumb:"https://t3.ftcdn.net/jpg/01/76/35/10/360_F_176351070_s3HmmvDTtYLDwCJmLOF3RbLm8T6iEZKw.jpg",bg:"https://cdn.mos.cms.futurecdn.net/adioVnroecNkF7z2RSNDWQ-1200-80.jpg",wiki:"https://en.wikipedia.org/wiki/Polaris",video:"https://youtu.be/cDhSSxmk3PQ"},
+    rigel:{name:"Rigel",desc:"Blue supergiant in Orion, one of the brightest stars in the night sky.",type:"B8Ia",distance:"860 ly",luminosity:"120,000 L☉",radius:"78 R☉",thumb:"https://www.shutterstock.com/shutterstock/videos/3631261437/thumb/1.jpg?ip=x480",bg:"https://c4.wallpaperflare.com/wallpaper/725/313/67/space-star-orion-rigel-wallpaper-preview.jpg",wiki:"https://en.wikipedia.org/wiki/Rigel",video:"https://youtu.be/Aiu4lno4ePA"},
+    antares:{name:"Antares",desc:"Red supergiant in Scorpius, sometimes called the 'Heart of the Scorpion'.",type:"M1.5Iab-Ib",distance:"550 ly",luminosity:"75,900 L☉",radius:"680 R☉",thumb:"https://i.guim.co.uk/img/media/1e5e45865dd392fb368aefc7e28436ad5adc091f/0_6_3840_2303/master/3840.jpg?width=1200&quality=85&auto=format&fit=max&s=455f7e1dbee3ed87d5d6c6af0cc71e78",bg:"https://www.dl-digital.com/images/Astronomy/Nebulae/MasterDSLRRho-4603-4604-Sigma-4605-M4-BTW-BlendFinal3HDweb.jpg",wiki:"https://en.wikipedia.org/wiki/Antares",video:"https://youtu.be/E1D1IoC4dTs"},
+    deneb:{name:"Deneb",desc:"Blue-white supergiant in Cygnus, one of the most luminous stars known.",type:"A2Ia",distance:"2,615 ly",luminosity:"196,000 L☉",radius:"203 R☉",thumb:"https://cdn.shopify.com/s/files/1/0742/7719/1954/files/bellatrix-star-3_1024x1024.jpg?v=1682468543",bg:"https://astropixels.com/stars/images/Deneb-01w.jpg",wiki:"https://en.wikipedia.org/wiki/Deneb",video:"https://youtu.be/vZEze61pKKw"},
+    altair:{name:"Altair",desc:"Nearby A-type star in Aquila, part of the Summer Triangle.",type:"A7V",distance:"16.7 ly",luminosity:"10.6 L☉",radius:"1.63 R☉",thumb:"https://osr.org/wp-content/uploads/2016/08/altair-star.jpg",bg:"https://www.galacticimages.com/wp-content/uploads/2021/08/Altair_4minMod6DDSLR_ChumackHRblog.jpg",wiki:"https://en.wikipedia.org/wiki/Altair",video:"https://youtu.be/ahf0LAzD2MI"},
+  };
+
+  const sidebar=document.getElementById("star-list");
+  const bg1=document.getElementById("bg");
+  const bg2=document.getElementById("bg2");
+  let showingBg1=true;
+
+  // Sidebar population
+  Object.entries(stars).forEach(([key,star])=>{
+    const item=document.createElement("div");
+    item.className="star-item";
+    item.style.backgroundImage=`url(${star.thumb})`;
+    item.innerHTML=`<span>${star.name}</span>`;
+    item.addEventListener("click",()=>showStar(key,item));
+    sidebar.appendChild(item);
+  });
+
+  function showStar(key,clickedItem){
+    const s=stars[key], pane=document.getElementById("star-info");
+    
+    // Sidebar active highlight
+    document.querySelectorAll(".star-item").forEach(i=>i.classList.remove("active"));
+    clickedItem.classList.add("active");
+
+    // Animate content
+    pane.classList.remove("visible"); pane.classList.add("hidden");
+    setTimeout(()=>{
+      pane.innerHTML=`
+        <div class="info-box">
+          <h1>${s.name}</h1>
+          <p>${s.desc}</p>
+          <table class="star-info-table">
+            <tr><th>Type</th><td>${s.type}</td></tr>
+            <tr><th>Distance</th><td>${s.distance}</td></tr>
+            <tr><th>Luminosity</th><td>${s.luminosity}</td></tr>
+            <tr><th>Radius</th><td>${s.radius}</td></tr>
+          </table>
+          <p><a class="wiki-link" href="${s.wiki}" target="_blank">👉 Read more on Wikipedia</a></p>
+          <p><a class="video-link" href="${s.video}" target="_blank">👉 Watch Video on YouTube</a></p>
+        </div>`;
+      pane.classList.remove("hidden"); pane.classList.add("visible");
+    },400);
+
+    // Crossfade backgrounds
+    if(showingBg1){
+      bg2.style.backgroundImage=`url(${s.bg})`;
+      bg2.style.opacity=1; bg1.style.opacity=0;
+    } else {
+      bg1.style.backgroundImage=`url(${s.bg})`;
+      bg1.style.opacity=1; bg2.style.opacity=0;
+    }
+    showingBg1=!showingBg1;
+  }
+
+  // Initial fade-in
+  window.addEventListener("DOMContentLoaded",()=>{
+    setTimeout(()=>document.getElementById("star-info").classList.add("visible"),400);
+  });
+</script>
+
+</body>
+</html>

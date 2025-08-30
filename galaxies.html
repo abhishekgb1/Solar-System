@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstroVenture - Galaxies</title>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      transition: background-image 1s ease-in-out, opacity 0.6s ease-in-out;
+      opacity: 1;
+    }
+
+    body.fade-out {
+      opacity: 0;
+    }
+
+    /* Backgrounds for galaxies */
+    body.bg-andromeda { background-image: url('https://img.goodfon.com/original/1920x1080/7/99/kosmos-space-svet-tma-vselennaia-zvezdy.jpg'); }
+    body.bg-milkyway { background-image: url('https://th.bing.com/th/id/R.60336657091d86bf4755f7c888e614ed?rik=TCWKLLCDubfk5g&riu=http%3a%2f%2fwww.pixelstalk.net%2fwp-content%2fuploads%2f2016%2f08%2fAndromeda-Galaxy-Milky-Way.jpg&ehk=plGXCabGQ7dAx6YArvO0TQgNmO5%2fwPr1PYQ3sXk9KTQ%3d&risl=1&pid=ImgRaw&r=0'); }
+    body.bg-triangulum { background-image: url('https://cdn.mos.cms.futurecdn.net/ZpUfTX7gshLjzhe4tCVuym.jpg'); }
+    body.bg-whirlpool { background-image: url('https://wallpapers.com/images/featured/whirlpool-galaxy-j9udxepebry2zf4e.jpg'); }
+    body.bg-sombrero { background-image: url('https://static.vecteezy.com/system/resources/previews/048/612/865/non_2x/grandeur-sombrero-galaxy-in-deep-field-nature-background-free-photo.jpg'); }
+    body.bg-pinwheel { background-image: url('https://cdn.esahubble.org/archives/images/wallpaper5/heic0602a.jpg'); }
+    body.bg-cartwheel { background-image: url('https://images7.alphacoders.com/101/thumb-1920-1014821.png'); }
+    body.bg-blackeye { background-image: url('https://www.hdwallpapers.in/download/sparkling_blue_and_brown_stars_on_black_sky_galaxy_hd_galaxy-3840x2160.jpg'); }
+    body.bg-cigar { background-image: url('https://1.bp.blogspot.com/-1G8Iy8elYVc/VtSbx0Xo8NI/AAAAAAAAzCY/0VCkC3SGmek/s1600/Cigar-Galaxy-Messier-82.jpg'); }
+    body.bg-bodes { background-image: url('https://a-static.besthdwallpaper.com/star-sky-and-space-wallpaper-1680x1050-20056_5.jpg'); }
+
+    /* Navbar Styling */
+    header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 50px;
+      position: fixed;
+      width: 100%;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+    }
+
+    .logo {
+      position: absolute;
+      left: 50px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+                   -1px 1px 0 #000, 1px 1px 0 #000;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1em;
+      font-weight: 600;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      transition: color 0.3s;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+                   -1px 1px 0 #000, 1px 1px 0 #000;
+    }
+
+    nav a:hover {
+      color: #ffcc00;
+    }
+
+    /* Galaxy Card */
+    .galaxy-card {
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; padding: 0 10%;
+      position: relative; opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+    }
+    .galaxy-card.active { opacity: 1; transform: translateY(0); }
+
+    .info-box { width: 40%; position: relative; z-index: 2; }
+    .subtitle { 
+      font-size: 1.7em; 
+      letter-spacing: 2px; 
+      text-transform: uppercase; 
+      color: #f1ee40; 
+      /*webkit-text-stroke: 1px #00ffff; / cyan border */
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6), -1px -1px 3px rgba(0,0,0,0.6);
+    }
+    .galaxy-name { 
+    font-size: 4em; 
+    margin: 10px 0; 
+    line-height: 1; 
+    color: #ffffff;           /* text color stays white */
+    /*webkit-text-stroke: 2px #000000; / changed border to black */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7), -2px -2px 4px rgba(0,0,0,0.7);
+    }
+    .description { font-size: 1.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.7), -2px -2px 4px rgba(0,0,0,0.7);line-height: 1.6 }
+    .learn-more {
+      background: none; border: 2px solid white; color: white;
+      padding: 10px 20px; border-radius: 5px;
+      cursor: pointer; margin-top: 20px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .learn-more:hover { background-color: white; color: #0d1117; }
+
+    /* Nav Circles */
+    .galaxy-nav {
+      position: fixed; bottom: 50px; left: 50%;
+      transform: translateX(-50%); display: flex;
+      gap: 15px; z-index: 100;
+    }
+    .nav-circle {
+      width: 45px; height: 45px;
+      border-radius: 50%; overflow: hidden;
+      cursor: pointer; border: 2px solid transparent;
+      transition: transform 0.3s, border 0.3s;
+    }
+    .nav-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .nav-circle.active { border: 2px solid white; transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">AstroVenture</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="planets.html">Planets</a></li>
+        <li><a href="stars.html">Stars</a></li>
+        <li><a href="galaxies.html">Galaxies</a></li>
+        <li><a href="solarsystem.html">Solar System</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="galaxy-container"></main>
+  <div class="galaxy-nav"></div>
+
+  <script>
+    const galaxies = [
+      { name: 'MILKY WAY', subtitle: 'OUR HOME GALAXY',
+        description: 'Our solar system resides in the Milky Way, a barred spiral galaxy containing billions of stars, including our Sun.',
+        bgClass: 'bg-milkyway',
+        icon: 'https://tse3.mm.bing.net/th/id/OIP.MMK9a8jsw6ZFw5PgCSvb6wHaHX?w=1024&h=1019&rs=1&pid=ImgDetMain&o=7&rm=3',
+        wiki: 'https://en.wikipedia.org/wiki/Milky_Way'
+      },
+      { name: 'ANDROMEDA', subtitle: 'THE GREAT SPIRAL',
+        description: 'The Andromeda Galaxy (M31) is the closest major galaxy to the Milky Way and is on a collision course with us in about 4.5 billion years.',
+        bgClass: 'bg-andromeda',
+        icon: 'https://tse4.mm.bing.net/th/id/OIP.Y-J4c4gXFLHuOIZKZKXNaAHaGL?rs=1&pid=ImgDetMain&o=7&rm=3',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'TRIANGULUM', subtitle: 'A COSMIC NEIGHBOR',
+        description: 'The Triangulum Galaxy (M33) is the third-largest member of the Local Group of galaxies and is a known hub of star formation.',
+        bgClass: 'bg-triangulum',
+        icon: 'https://aasnova.org/wp-content/uploads/2022/07/sig09-004.jpg',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'WHIRLPOOL', subtitle: 'THE GRAND DESIGN',
+        description: 'Famous for its well-defined spiral arms, the Whirlpool Galaxy (M51a) is a classic example of a grand-design spiral galaxy.',
+        bgClass: 'bg-whirlpool',
+        icon: 'https://tse1.mm.bing.net/th/id/OIP.HMkvdcI-UAfjcrmklLK-pQHaFt?w=864&h=667&rs=1&pid=ImgDetMain&o=7&rm=3',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'SOMBRERO', subtitle: 'THE EDGE-ON SPIRAL',
+        description: 'The Sombrero Galaxy (M104) is known for its bright nucleus and a large central bulge, encircled by a prominent dust lane, resembling a sombrero.',
+        bgClass: 'bg-sombrero',
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/M104_ngc4594_sombrero_galaxy_hi-res.jpg/1920px-M104_ngc4594_sombrero_galaxy_hi-res.jpg',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'PINWHEEL', subtitle: 'A FACE-ON SPIRAL',
+        description: 'Located 21 million light-years away, the Pinwheel Galaxy is a grand design spiral galaxy, notable for its large population of new stars.',
+        bgClass: 'bg-pinwheel',
+        icon: 'https://littleastronomy.com/wp-content/uploads/2022/02/pinwheel-galaxy.jpg',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'CARTWHEEL', subtitle: 'THE COSMIC COLLISION',
+        description: 'A rare ring galaxy, its unique structure is the result of a high-speed collision with a smaller galaxy about 200 million years ago.',
+        bgClass: 'bg-cartwheel',
+        icon: 'https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/james-webb-telescope-view-of-cartwheel-galaxy-in-high-definition-m-g-whittingham.jpg',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'BLACK EYE', subtitle: 'THE SLEEPING BEAUTY',
+        description: 'Known for the spectacular dark band of absorbing dust in front of its bright nucleus, giving it the appearance of a "black eye."',
+        bgClass: 'bg-blackeye',
+        icon: 'https://th.bing.com/th/id/R.73d994c40308b244b674a842bd3c1a1c?rik=wNAB%2ff1e3AqEmA&riu=http%3a%2f%2fesahubble.org%2fmedia%2farchives%2fstickers%2fscreen%2fhst_sticker_0015.jpg&ehk=%2flCZUYfpXz4x4ijWaCw0X8hZe1rhsQMfYAJribnL0MM%3d&risl=&pid=ImgRaw&r=0',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'CIGAR', subtitle: 'THE STARBURST GALAXY',
+        description: 'Remarkable for its extremely high rate of star formation (a starburst), triggered by gravitational interaction with its neighbor, Bode\'s Galaxy.',
+        bgClass: 'bg-cigar',
+        icon: 'https://tse1.mm.bing.net/th/id/OIP.dlaRLauZlpr2fIN_EMkfyAHaFG?rs=1&pid=ImgDetMain&o=7&rm=3',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      },
+      { name: 'BODE\'S GALAXY', subtitle: 'THE PERFECT SPIRAL',
+        description: 'M81 is a grand design spiral galaxy with near-perfect arms, making it a favorite for astronomers to study star formation.',
+        bgClass: 'bg-bodes',
+        icon: 'https://chamberlainobservatory.com/wp-content/uploads/2020/04/20200331-M81-Bodes-Galaxy-2048x1401.jpg',
+        wiki: 'https://en.wikipedia.org/wiki/Andromeda_Galaxy'
+      }
+    ];
+
+    const galaxyContainer = document.getElementById('galaxy-container');
+    let currentGalaxyIndex = 0;
+    let isTransitioning = false;
+
+    function createGalaxyCard(galaxy) {
+      const card = document.createElement('section');
+      card.classList.add('galaxy-card');
+      card.innerHTML = `
+        <div class="info-box">
+          <h3 class="subtitle">${galaxy.subtitle}</h3>
+          <h1 class="galaxy-name">${galaxy.name}</h1>
+          <p class="description">${galaxy.description}</p>
+          <button class="learn-more" onclick="window.open('${galaxy.wiki}', '_blank')">LEARN MORE</button>
+        </div>`;
+      return card;
+    }
+
+    function updateBackground(galaxy) {
+      document.body.className = '';
+      if (galaxy && galaxy.bgClass) {
+        document.body.classList.add(galaxy.bgClass);
+      }
+    }
+
+    function renderGalaxy(index) {
+      if (isTransitioning || index === currentGalaxyIndex) return;
+      isTransitioning = true;
+
+      const oldCard = galaxyContainer.querySelector('.galaxy-card');
+      if (oldCard) oldCard.classList.remove('active');
+
+      const newCard = createGalaxyCard(galaxies[index]);
+      galaxyContainer.appendChild(newCard);
+      updateBackground(galaxies[index]);
+
+      setTimeout(() => {
+        if (oldCard) galaxyContainer.removeChild(oldCard);
+        newCard.classList.add('active');
+        currentGalaxyIndex = index;
+        isTransitioning = false;
+        updateNavCircles(currentGalaxyIndex);
+      }, 800);
+    }
+
+    function createNavCircles() {
+      const navContainer = document.querySelector('.galaxy-nav');
+      galaxies.forEach((galaxy, index) => {
+        const circle = document.createElement('div');
+        circle.classList.add('nav-circle');
+        const img = document.createElement('img');
+        img.src = galaxy.icon;
+        circle.appendChild(img);
+        circle.addEventListener('click', () => renderGalaxy(index));
+        navContainer.appendChild(circle);
+      });
+    }
+
+    function updateNavCircles(activeIndex) {
+      const circles = document.querySelectorAll('.nav-circle');
+      circles.forEach((circle, index) => {
+        circle.classList.toggle('active', index === activeIndex);
+      });
+    }
+
+    function handleScroll(e) {
+      if (isTransitioning) return;
+      if (e.deltaY > 0) {
+        renderGalaxy(Math.min(galaxies.length - 1, currentGalaxyIndex + 1));
+      } else {
+        renderGalaxy(Math.max(0, currentGalaxyIndex - 1));
+      }
+    }
+
+    // Smooth transition for page navigation
+    document.querySelectorAll(".transition-link").forEach(link => {
+      link.addEventListener("click", function(e) {
+        const target = this.getAttribute("href");
+        if (target && target !== "#") {
+          e.preventDefault();
+          document.body.classList.add("fade-out");
+          setTimeout(() => {
+            window.location.href = target;
+          }, 600);
+        }
+      });
+    });
+    
+    // Debounce scroll event
+    let scrollTimeout;
+    window.addEventListener('wheel', (e) => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => handleScroll(e), 50);
+    });
+
+    // Initial setup
+    createNavCircles();
+    const initialCard = createGalaxyCard(galaxies[0]);
+    galaxyContainer.appendChild(initialCard);
+    setTimeout(() => {
+      initialCard.classList.add('active');
+      updateNavCircles(0);
+      updateBackground(galaxies[0]);
+    }, 100);
+  </script>
+</body>
+</html>
